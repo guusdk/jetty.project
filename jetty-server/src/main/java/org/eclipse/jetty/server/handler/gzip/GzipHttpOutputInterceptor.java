@@ -142,7 +142,13 @@ public class GzipHttpOutputInterceptor implements HttpOutput.Interceptor
         if (content.hasRemaining() || complete)
             new GzipBufferCB(content,complete,callback).iterate();
         else
+        {
+            if (_channel.getResponse().getContentLength() >= 0)
+            {
+                _channel.getResponse().setContentLength( (int) _deflater.getBytesWritten() );
+            }
             callback.succeeded();
+        }
     }
 
     protected void commit(ByteBuffer content, boolean complete, Callback callback)
@@ -208,7 +214,6 @@ public class GzipHttpOutputInterceptor implements HttpOutput.Interceptor
             BufferUtil.fill(_buffer,GZIP_HEADER,0,GZIP_HEADER.length);
 
             // Adjust headers
-            _channel.getResponse().setContentLength(-1);
             String etag=fields.get(HttpHeader.ETAG);
             if (etag!=null)
             {

@@ -150,7 +150,7 @@ public class GzipDefaultTest
             assertThat("Response status",response.getStatus(),is(HttpStatus.OK_200));
             assertThat("ETag", response.get("ETag"), containsString(GzipHttpContent.ETAG_GZIP));
             assertThat("Content encoding", response.get("Content-Encoding"), containsString("gzip"));
-            assertNull("Content length", response.get("Content-Length"));
+            assertThat("Content length", Integer.toString(filesize), is(response.get("Content-Length")));
    
             response = tester.executeRequest("GET","/context/file.txt",5,TimeUnit.SECONDS);
 
